@@ -17,7 +17,7 @@ set -e
 #  limitations under the License.
 #
 
-export GOPATH=$(pwd)/../local:$(pwd)/dep:$(pwd)
+export GOPATH=$(pwd)/dep:$(pwd)
 
 go get -u -d -t stash.forgerock.org/iot/identity-edge-controller-core/...
 
