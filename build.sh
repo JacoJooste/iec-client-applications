@@ -19,10 +19,11 @@ set -e
 
 export GOPATH=$(pwd)/../local:$(pwd)/dep:$(pwd)
 
-#go get -u -d -t stash.forgerock.org/iot/identity-edge-controller-core/...
+go get -u -d -t stash.forgerock.org/iot/identity-edge-controller-core/...
 
 source dep/src/stash.forgerock.org/iot/identity-edge-controller-core/version/platform-linux-x86_64.txt
 source dep/src/stash.forgerock.org/iot/identity-edge-controller-core/version/version.txt
 
-#go build -ldflags "${VERSION_INFO}" -tags 'logicrichos securerichos' forgerock.org/cmd/simplego
-go build -ldflags "${VERSION_INFO}" -tags 'logicrichos securerichos' forgerock.org/cmd/iecdirect
+rm -rf dist
+
+go build -ldflags "${VERSION_INFO}" -tags 'logicrichos securerichos' -o dist/goclient forgerock.org/cmd/goclient

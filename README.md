@@ -1,7 +1,13 @@
 # iec-client-applications
 
-docker build . -t iec-client-applications:latest
+Prepare the docker image that the client will be built and run in
 
-docker run --rm -it -v $(pwd):/root/iec iec-client-applications:latest bash -c "./build.sh"
+    docker build . -t iec-client-applications:latest
 
-docker run --rm -it -v $(pwd):/root/iec iec-client-applications:latest bash -c "export LD_LIBRARY_PATH=/usr/local/lib && ./simplego"
+Build the client application
+
+    docker run --rm -it -v $(pwd):/root/iec iec-client-applications:latest bash -c "./build.sh"
+
+Run the client application
+
+    docker run --rm -it -v $(pwd)/dist:/root/iec iec-client-applications:latest bash -c "export LD_LIBRARY_PATH=/usr/local/lib && ./goclient"
