@@ -30,6 +30,7 @@ const (
 	clientID = "echo-client"
 	peerClientID = "india-client"
 	peerDeviceID = "india-device"
+	userID = "Charlie"
 )
 
 func main() {
@@ -55,60 +56,91 @@ func main() {
 	}
 	result := zmqclient.Initialise(zmqclient.UseDynamicConfig(sdkConfig))
 	if result.Failure() {
-		panic("Initialisation request failed: " + result.String())
+		print("Initialisation request failed: " + result.Error.String())
 	}
 	println("Done")
 
 	fmt.Printf("Requesting configuration for device (id: %s)... ", peerDeviceID)
 	config, result := zmqclient.DeviceConfiguration(peerDeviceID)
 	if result.Failure() {
-		panic("Configuration request failed: " + result.String())
+		print("Configuration request failed: " + result.Error.String())
+	} else {
+		println("Received configuration: " + config)
 	}
 	println("Done")
-	println("Received configuration: " + config)
 
 	fmt.Printf("Requesting tokens for device (id: %s)... ", peerDeviceID)
 	tokens, result := zmqclient.DeviceTokens(peerDeviceID)
 	if result.Failure() {
-		panic("Token request failed: " + result.String())
+		print("Token request failed: " + result.Error.String())
+	} else {
+		var tokenObject json.Object
+		if !json.Parse(&tokenObject, []byte(tokens)) || !tokenObject.ContainsString("id_token") {
+			print("Failed to unpack ID Token from device tokens")
+		}
+
+		parts := strings.Split(tokenObject.GetString("id_token"), ".")
+		claims, err := jwt.DecodeSegment(parts[1])
+		if err != nil {
+			print("Failed to parse ID Token: " + err.Error())
+		}
+		println("Received ID token: ", string(claims))
 	}
 	println("Done")
-	var tokenObject json.Object
-	if !json.Parse(&tokenObject, []byte(tokens)) || !tokenObject.ContainsString("id_token") {
-		panic("Failed to unpack ID Token from device tokens")
-	}
-
-	parts := strings.Split(tokenObject.GetString("id_token"), ".")
-	claims, err := jwt.DecodeSegment(parts[1])
-	if err != nil {
-		panic("Failed to parse ID Token: " + err.Error())
-	}
-	println("Received ID token: ", string(claims))
 
 	fmt.Printf("Requesting configuration for client (id: %s)... ", peerClientID)
 	config, result = zmqclient.CustomCommand(peerClientID, "GET_CLIENT_CONFIG", nil)
 	if result.Failure() {
-		panic("Configuration request failed: " + result.String())
+		print("Configuration request failed: " + result.Error.String())
+	} else {
+		println("Received configuration: " + config)
 	}
 	println("Done")
-	println("Received configuration: " + config)
 
 	fmt.Printf("Requesting tokens for client (id: %s)... ", peerClientID)
 	tokens, result = zmqclient.DeviceTokens(peerClientID)
 	if result.Failure() {
-		panic("Token request failed: " + result.String())
+		print("Token request failed: " + result.Error.String())
+	} else {
+		var tokenObject json.Object
+		if !json.Parse(&tokenObject, []byte(tokens)) || !tokenObject.ContainsString("id_token") {
+			print("Failed to unpack ID Token from device tokens")
+		}
+
+		parts := strings.Split(tokenObject.GetString("id_token"), ".")
+		claims, err := jwt.DecodeSegment(parts[1])
+		if err != nil {
+			print("Failed to parse ID Token: " + err.Error())
+		}
+		println("Received ID token: ", string(claims))
 	}
 	println("Done")
-	if !json.Parse(&tokenObject, []byte(tokens)) || !tokenObject.ContainsString("id_token") {
-		panic("Failed to unpack ID Token from device tokens")
-	}
 
-	parts = strings.Split(tokenObject.GetString("id_token"), ".")
-	claims, err = jwt.DecodeSegment(parts[1])
-	if err != nil {
-		panic("Failed to parse ID Token: " + err.Error())
+	fmt.Printf("Registering device with existing user ID (id: %s)... ", userID)
+	result = zmqclient.DeviceRegister(userID, "{}")
+	if result.Failure() {
+		print("Registration request failed: " + result.Error.String())
 	}
-	println("Received ID token: ", string(claims))
+	println("Done")
+
+	fmt.Printf("Requesting tokens for user (id: %s)... ", userID)
+	tokens, result = zmqclient.DeviceTokens(userID)
+	if result.Failure() {
+		print("Token request failed: " + result.Error.String())
+	} else {
+		var tokenObject json.Object
+		if !json.Parse(&tokenObject, []byte(tokens)) || !tokenObject.ContainsString("id_token") {
+			print("Failed to unpack ID Token from device tokens")
+		}
+
+		parts := strings.Split(tokenObject.GetString("id_token"), ".")
+		claims, err := jwt.DecodeSegment(parts[1])
+		if err != nil {
+			print("Failed to parse ID Token: " + err.Error())
+		}
+		println("Received ID token for user: ", string(claims))
+	}
+	println("Done")
 
 	println("\n*** Completed  ", clientID, "\n")
 }

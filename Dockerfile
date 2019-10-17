@@ -39,3 +39,6 @@ RUN tar xf zeromq-4.2.5.tar.gz && \
     make install
 
 WORKDIR /root/iec
+
+ADD startup.sh .
+RUN chmod a+x startup.sh

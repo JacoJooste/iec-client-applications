@@ -50,14 +50,14 @@ func main() {
 	}
 	result := zmqclient.Initialise(zmqclient.UseDynamicConfig(sdkConfig))
 	if result.Failure() {
-		panic("Initialisation request failed: " + result.String())
+		print("Initialisation request failed: " + result.String())
 	}
 	println("Done")
 
 	fmt.Printf("Registering device (id: %s)... ", deviceID)
 	result = zmqclient.DeviceRegister(deviceID, "{}")
 	if result.Failure() {
-		panic("Registration request failed: " + result.String())
+		print("Registration request failed: " + result.String())
 	}
 	println("Done")
 

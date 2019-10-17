@@ -17,5 +17,6 @@ set -e
 #  limitations under the License.
 #
 
+docker run --network training_iec_net --add-host am.iec.com:172.16.0.10 --rm -it iec-client-applications:latest bash -c "./startup.sh"
 docker run --network training_iec_net --rm -it -v $(pwd)/dist/india:/root/iec iec-client-applications:latest bash -c "export LD_LIBRARY_PATH=/usr/local/lib && ./india"
 docker run --network training_iec_net --rm -it -v $(pwd)/dist/echo:/root/iec iec-client-applications:latest bash -c "export LD_LIBRARY_PATH=/usr/local/lib && ./echo"
